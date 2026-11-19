@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EdTechra Robotics Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#0a1428;--panel:#101e3a;--panel2:#162748;--line:#243a63;--cyan:#22d3ee;--blue:#3b82f6;--text:#e8f0ff;--mute:#a3b5d6;--ok:#34d399;--bad:#fb7185;--r:16px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.55 Sora,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+nav{position:sticky;top:0;height:100vh;padding:20px 14px;background:#08101f;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.brand{font-weight:700;font-size:18px;padding:4px 10px 18px}.brand span{color:var(--cyan)}
+nav button{display:flex;gap:10px;align-items:center;text-align:left;background:none;border:0;border-radius:12px;padding:12px;min-height:46px;color:var(--mute)}
+nav button:hover{background:var(--panel)}
+nav button[aria-current=page]{background:var(--panel2);color:var(--text);box-shadow:inset 3px 0 0 var(--cyan)}
+main{padding:28px clamp(16px,4vw,44px) 60px;max-width:1100px;width:100%}
+h1{font-size:clamp(26px,5vw,38px);line-height:1.15;margin:0 0 6px}
+h2{font-size:20px;margin:34px 0 14px}
+.sub{color:var(--mute);margin:0 0 24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.hero{display:grid;gap:18px;grid-template-columns:1.4fr 1fr;align-items:stretch}
+.btn{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#04101f;border:0;border-radius:12px;padding:12px 18px;min-height:46px;font-weight:700}
+.btn.alt{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.1)}
+.bar{height:10px;background:#0a1428;border-radius:9px;overflow:hidden;margin:10px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .4s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat b{display:block;font-size:28px;color:var(--cyan)}.stat span{color:var(--mute);font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.mods{display:grid;gap:12px}
+.mod>button{width:100%;display:flex;justify-content:space-between;gap:12px;align-items:center;background:none;border:0;padding:0;text-align:left}
+.mod h3{margin:0;font-size:17px}.mod small{color:var(--mute)}
+.lessons{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.lessons label{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--panel2);min-height:46px;cursor:pointer}
+.lessons input{width:22px;height:22px;accent-color:var(--cyan)}
+.act{list-style:none;padding:0;margin:0;display:grid;gap:8px}.act li{padding:10px 14px;background:var(--panel);border-left:3px solid var(--cyan);border-radius:8px}
+.lab{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+textarea{width:100%;min-height:300px;background:#060e1d;color:#c8f3ff;border:1px solid var(--line);border-radius:12px;padding:14px;font:14px/1.6 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.board{display:grid;place-items:center;gap:10px;padding:20px;text-align:center}
+.led{width:70px;height:70px;border-radius:50%;background:#2a1a22;border:3px solid #55303c;transition:.1s}
+.led.on{background:#ff4d6d;border-color:#ffb3c1;box-shadow:0 0 40px 12px rgba(255,77,109,.7)}
+.chk{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px}
+.chk li.ok::before{content:"\2713 ";color:var(--ok)}.chk li.no::before{content:"\2717 ";color:var(--bad)}
+.soon{display:grid;gap:12px}.soon ul{margin:0;padding-left:20px;color:var(--mute)}
+.cl{width:100%;height:auto;background:#060e1d;border:1px solid var(--line);border-radius:var(--r)}.cl text{fill:#e8f0ff;font:12px Sora,sans-serif}.term{cursor:pointer}.term:focus-visible circle{stroke:#fff;stroke-width:3}pre{background:#060e1d;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:140px;white-space:pre-wrap;color:#c8f3ff}.done{color:var(--ok);font-weight:700}
+@media(max-width:820px){
+ .app{grid-template-columns:1fr;padding-bottom:70px}
+ nav{position:fixed;inset:auto 0 0 0;height:auto;flex-direction:row;overflow-x:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:5;border-right:0;border-top:1px solid var(--line)}
+ nav button{flex:0 0 auto;font-size:13px;min-width:88px;justify-content:center;padding:8px}
+ .brand,nav button .ic{display:none}
+ .hero,.lab{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav aria-label="Main"></nav>
+<main id="v"></main>
+</div>
+<script>
+var MODS=[
+["Electronics Fundamentals","Introduction to Electronics|Understanding Electricity|Voltage|Current|Resistance|Electronic Components|Understanding Breadboards|Breadboard Connections|LEDs|Resistors|Transistors|Practical Electronics Activity"],
+["Microcontrollers","What Is a Microcontroller?|Microcontrollers vs Computers|Arduino UNO|ESP32|ESP32 Components|ESP32 GPIO Pins|Digital Inputs|Digital Outputs|Analog Inputs|Introduction to Microcontroller Programming"],
+["Programming Fundamentals","Introduction to Arduino C++|Program Structure|setup()|loop()|Variables|Data Types|pinMode()|digitalWrite()|digitalRead()|delay()|Comments|Basic Debugging"],
+["LED Programming","Connecting an LED|LED Circuit|Turning an LED ON|Turning an LED OFF|Blinking an LED|Changing Blinking Speed|Multiple LEDs|LED Patterns|Traffic Light|Coding Challenge"],
+["Sensors","Introduction to Sensors|Sensor Data|DHT11 Temperature Sensor|Reading Temperature|Reading Humidity|Soil Moisture Sensor|Light Sensor|Ultrasonic Sensor|Sensor Applications|Sensor Challenge"],
+["Conditions and Decisions","if Statements|Comparison Operators|if and else|else if|Logical Operators|Button-Controlled LED|Sensor Thresholds|Conditions Challenge"]
+].map(function(m){return{t:m[0],l:m[1].split("|")}});
+var NAV=[["dash","Dashboard"],["path","Learning Path"],["circuit","Circuit Lab"],["code","Code Lab"],["chal","Challenges"],["proj","Projects"],["hw","Hardware Lab"],["prog","My Progress"]];
+var S={done:{},ch:0,act:[],open:0};
+try{var raw=localStorage.getItem("edtechra");if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+function save(){try{localStorage.setItem("edtechra",JSON.stringify(S))}catch(e){}}
+function log(t){S.act.unshift(t);S.act=S.act.slice(0,6);save()}
+function total(){return MODS.reduce(function(a,m){return a+m.l.length},0)}
+function count(){return Object.keys(S.done).length}
+function modDone(i){return MODS[i].l.filter(function(_,j){return S.done[i+"-"+j]}).length}
+function next(){for(var i=0;i<MODS.length;i++)for(var j=0;j<MODS[i].l.length;j++)if(!S.done[i+"-"+j])return[i,j];return null}
+var cur="dash",$=function(s){return document.querySelector(s)};
+function go(v){cur=v;if(location.hash!=="#"+v)history.replaceState(null,"","#"+v);render();window.scrollTo(0,0)}
+function nav(){$("nav").innerHTML='<div class="brand">EdTechra <span>Robotics Studio</span></div>'+NAV.map(function(n){return'<button data-go="'+n[0]+'"'+(n[0]===cur?' aria-current="page"':'')+'>'+n[1]+'</button>'}).join("")}
+function stat(n,l){return'<div class="card stat"><b>'+n+'</b><span>'+l+'</span></div>'}
+function dash(){
+ var n=next(),pct=Math.round(count()/total()*100);
+ var cont=!S.s1?'<p class="sub" style="margin:0">Session 1</p><h2 style="margin:4px 0">Connect your board</h2><p class="sub">Plug in your ESP32 and find out which board you have.</p><button class="btn" data-go="hw">Start Session 1</button>':n?'<p class="sub" style="margin:0">Module '+(n[0]+1)+', Lesson '+(n[1]+1)+'</p><h2 style="margin:4px 0">'+MODS[n[0]].l[n[1]]+'</h2><div class="bar"><i style="width:'+pct+'%"></i></div><p class="sub">'+pct+'% of the course complete</p><button class="btn" data-lesson="'+n[0]+'-'+n[1]+'">Continue lesson</button>':'<h2>Course complete</h2>';
+ return'<h1>Welcome to Robotics Studio</h1><p class="sub">Learn electronics. Write code. Build real robots.</p>'+
+ '<div class="hero"><div class="card"><p class="sub" style="margin:0">Continue learning</p>'+cont+'</div><div class="card"><h2 style="margin-top:0">Quick actions</h2><div class="actions"><button class="btn" data-go="path">Start lesson</button><button class="btn alt" data-go="circuit">Open Circuit Lab</button><button class="btn alt" data-go="code">Open Code Lab</button><button class="btn alt" data-go="chal">Start challenge</button><button class="btn alt" data-go="hw">Connect ESP32</button></div></div></div>'+
+ '<h2>Learning progress</h2><div class="stats">'+stat(count(),"Lessons completed")+stat(S.ch,"Coding challenges completed")+stat(S.circ||0,"Circuits built")+stat(0,"Projects completed")+stat((count()*0.4).toFixed(1),"Learning hours")+'</div>'+
+ '<h2>Current learning path</h2>'+pathHtml()+
+ '<h2>Recent activity</h2>'+(S.act.length?'<ul class="act">'+S.act.map(function(a){return'<li>'+a+'</li>'}).join("")+'</ul>':'<p class="sub">No activity yet. Tick off your first lesson in the Learning Path.</p>')}
+function pathHtml(){return'<div class="mods">'+MODS.map(function(m,i){var d=modDone(i),o=S.open===i;return'<div class="card mod"><button data-open="'+i+'" aria-expanded="'+o+'"><span><h3>Module '+(i+1)+': '+m.t+'</h3><small>'+d+' of '+m.l.length+' lessons done</small></span><span>'+(o?"Hide":"Show")+'</span></button><div class="bar"><i style="width:'+d/m.l.length*100+'%"></i></div>'+(o?'<ul class="lessons">'+m.l.map(function(t,j){var k=i+"-"+j;return'<li><label><input type="checkbox" data-lesson="'+k+'"'+(S.done[k]?' checked':'')+'>Lesson '+(j+1)+': '+t+'</label></li>'}).join("")+'</ul>':'')+'</div>'}).join("")+'</div>'}
+var CODE="const int LED = 2;\n\nvoid setup() {\n  pinMode(LED, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(LED, HIGH);\n  delay(500);\n  digitalWrite(LED, LOW);\n  delay(500);\n}";
+function code(){return'<h1>Code Lab</h1><p class="sub">Challenge: blink the LED on and off using setup() and loop().</p><div class="lab"><div><textarea id="src" spellcheck="false" aria-label="Arduino C++ editor">'+CODE+'</textarea><div class="actions" style="margin-top:12px"><button class="btn" id="run">Run simulation</button><button class="btn alt" id="chk">Check my code</button></div></div><div class="card board"><div class="led" id="led"></div><p class="sub" style="margin:0">Virtual LED on GPIO 2</p><ul class="chk" id="res" style="text-align:left"></ul></div></div>'}
+var timer;
+function rules(s){var b=(s.match(/void\s+loop\s*\(\s*\)\s*\{([\s\S]*)\}/)||[])[1]||"";return[
+["Has a setup() function",/void\s+setup\s*\(\s*\)/.test(s),"Add void setup() { } to run code once at the start."],
+["Has a loop() function",/void\s+loop\s*\(\s*\)/.test(s),"Add void loop() { } to repeat code forever."],
+["Sets the pin as OUTPUT in setup()",/pinMode\s*\([^)]*,\s*OUTPUT\s*\)/.test(s),"Use pinMode(pin, OUTPUT); inside setup()."],
+["Turns the LED on with HIGH",/digitalWrite\s*\([^)]*,\s*HIGH\s*\)/.test(b),"Call digitalWrite(pin, HIGH); inside loop()."],
+["Turns the LED off with LOW",/digitalWrite\s*\([^)]*,\s*LOW\s*\)/.test(b),"Call digitalWrite(pin, LOW); inside loop()."],
+["Waits with delay()",/delay\s*\(\s*\d+\s*\)/.test(b),"Use delay(500); so you can see the blink."],
+["Every statement ends with a semicolon",!/\)\s*\n\s*(digitalWrite|delay|pinMode)/.test(s),"Check for a missing ; at the end of a line."]]}
+function check(){var r=rules($("#src").value),ok=r.every(function(x){return x[1]});
+ $("#res").innerHTML=r.map(function(x){return'<li class="'+(x[1]?'ok':'no')+'">'+(x[1]?x[0]:x[0]+'. Hint: '+x[2])+'</li>'}).join("");
+ if(ok&&!S.chDone){S.chDone=1;S.ch++;log("Passed coding challenge: Blink an LED");save()}return ok}
+function run(){clearTimeout(timer);var led=$("#led");led.className="led";
+ if(!check()){return}
+ var b=$("#src").value.match(/void\s+loop\s*\(\s*\)\s*\{([\s\S]*)\}/)[1],st=[],re=/digitalWrite\s*\([^)]*,\s*(HIGH|LOW)\s*\)|delay\s*\(\s*(\d+)\s*\)/g,m;
+ while(m=re.exec(b))st.push(m[1]?[m[1]==="HIGH"]:[null,Math.min(+m[2],1500)]);
+ var i=0;(function tick(){var s=st[i++%st.length],w=0;if(s[0]!==null)led.className="led"+(s[0]?" on":"");else w=s[1];timer=setTimeout(tick,w)})()}
+function soon(t,d,items){return'<h1>'+t+'</h1><p class="sub">'+d+'</p><div class="card soon"><b>Coming in the next build</b><ul>'+items.map(function(i){return'<li>'+i+'</li>'}).join("")+'</ul></div>'}
+function view(){
+ if(cur==="dash")return dash();
+ if(cur==="path")return'<h1>Learning Path</h1><p class="sub">Six modules from first circuit to decision-making code. Tick lessons off as you finish them.</p>'+pathHtml();
+ if(cur==="code")return code();
+ if(cur==="circuit")return circuit();if(0)return soon("Circuit Lab","Build circuits on a virtual breadboard and see them work.",["Drag-and-drop breadboard with ESP32, LED, resistor, button and sensors","Wire checks that explain what is missing or wrong","Faulty-circuit debugging exercises"]);
+ if(cur==="chal")return chal();if(0)return soon("Challenges","Coding challenges with test cases and step-by-step hints.",["One challenge per module, unlocked as you learn","Rule-based checks with fixed hints, no AI","Try the Blink challenge now in Code Lab"]);
+ if(cur==="proj")return soon("Projects","Combine circuits and code into complete builds.",["Traffic light","Night light with a light sensor","Plant moisture monitor"]);
+ if(cur==="hw")return hws();if(0)return soon("Hardware Lab","Connect an ESP32 over USB and upload code without Arduino IDE.",["Browser USB upload (Web Serial) in Chrome or Edge","Step-by-step connection checklist","Serial monitor for sensor readings"]);
+ var p=Math.round(count()/total()*100);
+ return'<h1>My Progress</h1><p class="sub">Your learning at a glance.</p><div class="stats">'+stat(p+"%","Course complete")+stat(count()+" / "+total(),"Lessons")+stat(S.ch,"Challenges")+'</div><h2>By module</h2>'+MODS.map(function(m,i){return'<div class="card" style="margin-bottom:10px"><b>'+m.t+'</b><div class="bar"><i style="width:'+modDone(i)/m.l.length*100+'%"></i></div><small>'+modDone(i)+' of '+m.l.length+'</small></div>'}).join("")}
+var CT=[["g2","GPIO 2",110,70],["g4","GPIO 4",110,120],["v3","3V3",110,170],["gn","GND",110,220],["ra","R1",290,70],["rb","R1",400,70],["an","LED +",470,150],["ca","LED -",470,250]],CW=[],CSEL=null,CON=false,CTM;
+function cpt(i){for(var k=0;k<CT.length;k++)if(CT[k][0]===i)return CT[k]}
+function conn(a,b){var seen={},q=[a];seen[a]=1;while(q.length){var x=q.pop();if(x===b)return true;CW.forEach(function(w){var y=w[0]===x?w[1]:w[1]===x?w[0]:null;if(y&&!seen[y]){seen[y]=1;q.push(y)}})}return false}
+function circuit(){return'<h1>Circuit Lab</h1><p class="sub">Wire GPIO 2 through the resistor to the LED, then back to GND. Tap one terminal, then another, to add or remove a wire.</p><div class="lab"><svg id="cv" class="cl" viewBox="0 0 560 300" aria-label="Virtual breadboard"></svg><div class="card"><b>Wiring checks</b><ul class="chk" id="cres"><li class="no">Add your first wire to start.</li></ul><div class="actions" style="margin-top:14px"><button class="btn" id="crun">Power on</button><button class="btn alt" id="cclr">Clear wires</button></div></div></div>'}
+function cdraw(){var s="";CW.forEach(function(w){var p=cpt(w[0]),q=cpt(w[1]);s+='<line x1="'+p[2]+'" y1="'+p[3]+'" x2="'+q[2]+'" y2="'+q[3]+'" stroke="#22d3ee" stroke-width="5" stroke-linecap="round"/>'});
+s+='<rect x="20" y="30" width="90" height="220" rx="10" fill="#162748" stroke="#3b82f6"/><text x="65" y="22" text-anchor="middle">ESP32</text><rect x="290" y="56" width="110" height="28" rx="6" fill="#8a5a2b"/><text x="345" y="104" text-anchor="middle">Resistor 220 ohm</text><circle cx="470" cy="200" r="24" fill="'+(CON?'#ff4d6d':'#3a2230')+'" stroke="#ffb3c1" stroke-width="3"'+(CON?' style="filter:drop-shadow(0 0 14px #ff4d6d)"':'')+'/><text x="505" y="205">LED</text>';
+CT.forEach(function(t,i){var a=i<4?'end':i>5?'start':'middle',lx=i<4?t[2]-14:i>5?t[2]+14:t[2],ly=i>3&&i<6?t[3]-14:t[3]+4;s+='<g class="term" data-t="'+t[0]+'" tabindex="0" role="button" aria-label="Terminal '+t[1]+'"><circle cx="'+t[2]+'" cy="'+t[3]+'" r="18" fill="transparent"/><circle cx="'+t[2]+'" cy="'+t[3]+'" r="8" fill="'+(CSEL===t[0]?'#fff':'#22d3ee')+'" stroke="#04101f" stroke-width="2"/><text x="'+lx+'" y="'+ly+'" text-anchor="'+a+'">'+t[1]+'</text></g>'});
+var c=$("#cv");if(c)c.innerHTML=s}
+function cshow(){var ra=conn("g2","ra")&&conn("rb","an")||conn("g2","rb")&&conn("ra","an");var r=[["GPIO 2 reaches LED + through resistor R1",ra,"Wire GPIO 2 to one end of R1, then the other end of R1 to LED +."],["LED - connects to GND",conn("ca","gn"),"Wire LED - to GND to complete the circuit."],["No wire skips the resistor",!conn("g2","an"),"GPIO 2 touches LED + directly. Without R1 the LED can burn out."],["3V3 and GND are not joined",!conn("v3","gn"),"3V3 is shorted to GND. Remove that wire."],["LED is the right way round",!(conn("g2","ca")||conn("ra","ca")||conn("rb","ca")),"LED - is on the GPIO side. Swap the LED wires."]];
+var ok=r.every(function(x){return x[1]});$("#cres").innerHTML=r.map(function(x){return'<li class="'+(x[1]?'ok':'no')+'">'+(x[1]?x[0]:x[0]+'. Hint: '+x[2])+'</li>'}).join("");
+if(ok&&!S.cDone){S.cDone=1;S.circ=(S.circ||0)+1;log("Built a working LED circuit");save()}return ok}
+function chal(){return'<h1>Challenges</h1><p class="sub">Each challenge is checked by fixed rules and gives fixed hints.</p><div class="mods"><div class="card"><h3>Blink an LED</h3><p class="sub">Write setup() and loop() so the LED blinks. '+(S.chDone?'<span class="done">Completed</span>':'')+'</p><button class="btn" data-go="code">Open Code Lab</button></div><div class="card"><h3>Wire the LED circuit</h3><p class="sub">Connect GPIO 2, a resistor, the LED and GND. '+(S.cDone?'<span class="done">Completed</span>':'')+'</p><button class="btn" data-go="circuit">Open Circuit Lab</button></div></div>'}
+function hw(){return'<h1>Hardware Lab</h1><p class="sub">Connect a real ESP32 and watch its serial output.</p><div class="card"><ol><li>Plug the ESP32 into the computer with a USB data cable.</li><li>Open this page in Chrome or Edge.</li><li>Press Connect ESP32 and choose the port.</li></ol><button class="btn" id="hwc">Connect ESP32</button></div><h2>Serial monitor</h2><pre id="hwo">Not connected.</pre><p class="sub">Uploading programs to the board is not built yet.</p>'}
+function hwo(t,add){var o=$("#hwo");if(o)o.textContent=add?o.textContent+t:t}
+async function hwc(){if(!navigator.serial){hwo("Web Serial is not available here. Use Chrome or Edge on a computer, and open the page in its own tab.");return}try{var p=await navigator.serial.requestPort();await p.open({baudRate:115200});hwo("Connected. Waiting for data...\n");log("Connected an ESP32");var d=new TextDecoder(),r=p.readable.getReader();for(;;){var x=await r.read();if(x.done)break;hwo(d.decode(x.value),1)}}catch(e){hwo("Could not connect: "+e.message)}}
+document.addEventListener("click",function(e){var t=e.target.closest("[data-t]");if(t){var id=t.dataset.t;if(CSEL===null)CSEL=id;else if(CSEL===id)CSEL=null;else{var k=-1;CW.forEach(function(w,i){if(w[0]===CSEL&&w[1]===id||w[1]===CSEL&&w[0]===id)k=i});if(k>=0)CW.splice(k,1);else CW.push([CSEL,id]);CSEL=null;CON=false;clearInterval(CTM);cshow()}cdraw();return}
+if(e.target.closest("#hwc"))return hwc();var b=e.target.closest("#cclr,#crun");if(!b)return;if(b.id==="cclr"){CW=[];CSEL=null;CON=false;clearInterval(CTM);cshow();cdraw()}else{clearInterval(CTM);if(!cshow())return;CTM=setInterval(function(){CON=!CON;cdraw()},500)}});
+document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.t)e.target.dispatchEvent(new MouseEvent("click",{bubbles:true}))});
+var HW={};
+function say(i,t){var o=$("#"+i);if(o)o.textContent=t}
+function hws(){var a=S.s1,b=S.s2,s1=a?'<p class="done">Congratulations! You connected your '+S.chip+'. Session 1 complete.</p>':'<ol><li>Plug the board into the computer with a USB data cable.</li><li>Press Connect board.</li><li>Pick the port that appears and wait a few seconds.</li></ol><button class="btn" id="s1c">Connect board</button><p class="sub" id="s1m" role="status"></p><details><summary>Board not connecting?</summary><ul class="chk"><li class="no">Use Chrome or Edge on a computer, not a phone or tablet.</li><li class="no">Open this page in its own browser tab, not inside a preview.</li><li class="no">Use a USB cable that carries data, not a charge-only cable.</li><li class="no">Close Arduino IDE or any serial monitor that uses the port.</li><li class="no">Install the CP210x or CH340 USB driver if no port appears.</li><li class="no">Hold the BOOT button while you press Connect board.</li></ul></details>',s2;
+if(!a)s2='<p class="sub">Finish Session 1 to unlock this session.</p>';else if(b)s2='<p class="done">Congratulations! Your board runs your code. Session 2 complete.</p>';else if(HW.up)s2='<p>Look at the small built-in LED on the board. Is it blinking?</p><div class="actions"><button class="btn" id="s2y">Yes, it blinks</button><button class="btn alt" id="s2n">No</button></div>'+(HW.no?'<ul class="chk"><li class="no">Press the EN or RESET button once.</li><li class="no">Check the file is a merged Blink .bin for your board.</li><li class="no">Try a different USB cable, then upload again.</li></ul>':'');
+else s2='<p>The Blink program turns the built-in LED on and off. Upload it to check that your board works.</p><label class="sub" for="s2f">Blink file (.bin) from your teacher</label><br><input type="file" id="s2f" accept=".bin" style="min-height:46px"><div class="actions" style="margin-top:12px"><button class="btn" id="s2u">Upload Blink</button></div><div class="bar" id="s2p"><i style="width:0"></i></div><p class="sub" id="s2m" role="status"></p>';
+return'<h1>Hardware Lab</h1><p class="sub">Short sessions. Finish one to unlock the next.</p><div class="mods"><div class="card"><h3>Session 1: Connect your board</h3>'+s1+'</div><div class="card"><h3>Session 2: Check your board by uploading code</h3>'+s2+'</div><div class="card"><h3>Session 3: Read your first sensor</h3><p class="sub">Coming soon.</p></div></div>'}
+function rd(f){return new Promise(function(r){var x=new FileReader();x.onload=function(){r(x.result)};x.readAsBinaryString(f)})}
+async function loadE(){if(window.EJ)return window.EJ;var u=["https://cdn.jsdelivr.net/npm/esptool-js@0.5.4/bundle.js","https://cdn.jsdelivr.net/npm/esptool-js@0.5.4/+esm","https://cdn.jsdelivr.net/npm/esptool-js@0.4.5/bundle.js"];for(var i=0;i<u.length;i++){try{var m=await import(u[i]);if(m&&!m.ESPLoader&&m.default&&m.default.ESPLoader)m=m.default;if(m&&m.ESPLoader){window.EJ=m;return m}}catch(e){}}return null}
+async function s1(){var E=await loadE();if(!navigator.serial){say("s1m","This browser cannot connect to boards. Use Chrome or Edge on a computer, in its own tab.");return}if(!E){say("s1m","The board tools did not load. Check the internet connection and reload.");return}
+try{say("s1m","Connecting...");HW.dev=await navigator.serial.requestPort();HW.tr=new E.Transport(HW.dev,true);HW.ld=new E.ESPLoader({transport:HW.tr,baudrate:115200,terminal:{clean:function(){},writeLine:function(){},write:function(){}}});var c=await HW.ld.main();S.chip=String(c).split(" (")[0];S.s1=1;log("Connected a "+S.chip);save();render()}catch(e){say("s1m",(e.name==="SecurityError"?"The browser blocked USB here. Open this page in its own browser tab, then try again. ":"Could not connect: "+e.message+" ")+"Check the cable carries data, or hold the BOOT button while you press Connect.")}}
+async function s2(){var f=$("#s2f")&&$("#s2f").files[0];if(!f){say("s2m","Choose the Blink .bin file first.");return}if(!HW.ld){say("s2m","The board is not connected. Run Session 1 again.");return}
+try{say("s2m","Uploading. Keep the cable plugged in.");var d=await rd(f);await HW.ld.writeFlash({fileArray:[{data:d,address:0}],flashSize:"keep",flashMode:"keep",flashFreq:"keep",eraseAll:false,compress:true,reportProgress:function(i,w,t){$("#s2p i").style.width=Math.round(w/t*100)+"%"}});if(HW.ld.after)await HW.ld.after();else if(HW.ld.hardReset)await HW.ld.hardReset();HW.up=1;render()}catch(e){say("s2m","Upload failed: "+e.message)}}
+document.addEventListener("click",function(e){var b=e.target.closest("#s1c,#s2u,#s2y,#s2n");if(!b)return;if(b.id==="s1c")s1();else if(b.id==="s2u")s2();else if(b.id==="s2n"){HW.no=1;render()}else{S.s2=1;log("Uploaded Blink to the board");save();render()}});
+function render(){clearInterval(CTM);CON=false;nav();$("#v").innerHTML=view();if(cur==="code")check(),$("#res").innerHTML="";if(cur==="circuit")cdraw()}
+document.addEventListener("click",function(e){var t=e.target.closest("[data-go],[data-open],[data-lesson],#run,#chk");if(!t)return;
+ if(t.dataset.go)go(t.dataset.go);
+ else if(t.dataset.open!==undefined){var i=+t.dataset.open;S.open=S.open===i?-1:i;save();render()}
+ else if(t.id==="run")run();else if(t.id==="chk")check();
+ else if(t.type!=="checkbox"&&t.dataset.lesson){S.open=+t.dataset.lesson.split("-")[0];cur="path";render()}});
+document.addEventListener("change",function(e){var k=e.target.dataset.lesson;if(!k)return;
+ if(e.target.checked){S.done[k]=1;var p=k.split("-");log("Completed lesson: "+MODS[p[0]].l[p[1]])}else delete S.done[k];
+ save();var y=scrollY;render();scrollTo(0,y)});
+window.addEventListener("hashchange",function(){var h=location.hash.slice(1);if(NAV.some(function(n){return n[0]===h})){cur=h;render()}});
+var h0=location.hash.slice(1);if(NAV.some(function(n){return n[0]===h0}))cur=h0;
+render();
+</script>
+</body>
+</html>
