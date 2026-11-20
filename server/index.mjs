@@ -27,6 +27,7 @@ function sendJson(res, status, data) {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Private-Network': 'true',
   });
   res.end(JSON.stringify(data));
 }
@@ -185,6 +186,7 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Private-Network': 'true',
     });
     res.end();
     return;

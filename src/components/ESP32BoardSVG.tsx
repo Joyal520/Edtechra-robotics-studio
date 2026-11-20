@@ -8,6 +8,9 @@ export type BoardPartId =
   | 'gnd'
   | 'en'
   | 'boot'
+  | 'wifi'
+  | 'pwr'
+  | 'uart'
   | 'led';
 
 export interface BoardPartInfo {
@@ -18,61 +21,82 @@ export interface BoardPartInfo {
 }
 
 export const ESP32_PARTS: Record<BoardPartId, BoardPartInfo> = {
-  usb: {
-    id: 'usb',
-    name: 'USB Port',
-    shortDesc: 'Power & Programming Port',
-    details:
-      'Connects your ESP32 to your computer using a USB data cable. It supplies power to the board and carries the programs you upload.',
-  },
   mcu: {
     id: 'mcu',
     name: 'ESP32 Microcontroller',
     shortDesc: 'The Brain of the Board',
     details:
-      'The silver metal shield houses the ESP32-WROOM chip — a dual-core processor with built-in Wi-Fi and Bluetooth that runs your code.',
+      'The silver metal shield holds the ESP-WROOM-32 chip — the brain of the board. It runs your program and processes inputs and outputs.',
+  },
+  usb: {
+    id: 'usb',
+    name: 'USB Port',
+    shortDesc: 'Power & Programming Port',
+    details:
+      'Connects your ESP32 to your computer with a USB data cable to power the board and upload programs.',
   },
   gpio: {
     id: 'gpio',
     name: 'GPIO Pins',
     shortDesc: 'General Purpose Input/Output',
     details:
-      'Numbered metal pins (like GPIO 2, 18, 21, 22, 23) that send signals out to LEDs/motors or read signals in from buttons and sensors.',
+      'Numbered pins (D2, D4, D5, D18, D21, D22, D23, etc.) used to turn LEDs/buzzers ON or OFF and read buttons or sensors.',
+  },
+  gnd: {
+    id: 'gnd',
+    name: 'GND (Ground)',
+    shortDesc: '0V Negative Return Path',
+    details:
+      'GND stands for Ground (0 volts). Every circuit needs a return connection to GND so electricity can flow in a complete loop.',
   },
   '3v3': {
     id: '3v3',
     name: '3.3V Power Pin',
-    shortDesc: 'Positive 3.3 Volt Supply',
+    shortDesc: '3.3 Volt Positive Output',
     details:
-      'Provides regulated 3.3V power for external sensors and components. Never connect 3.3V directly to GND (that causes a short circuit!).',
-  },
-  gnd: {
-    id: 'gnd',
-    name: 'GND (Ground) Pins',
-    shortDesc: 'Negative Reference (0V)',
-    details:
-      'Ground (0V) completes every electrical circuit. Every external LED, sensor, or button needs a return path back to GND.',
+      'Supplies 3.3 volts of steady power for external sensors and components. Never connect 3.3V directly to GND.',
   },
   en: {
     id: 'en',
-    name: 'EN (Reset) Button',
-    shortDesc: 'Restart Your Program',
+    name: 'EN Button',
+    shortDesc: 'Enable / Reset Button',
     details:
-      'Pressing EN restarts the ESP32 and runs your uploaded program from the beginning (starting at void setup()).',
+      'Pressing EN restarts (resets) the ESP32 so your uploaded program starts fresh from the beginning.',
   },
   boot: {
     id: 'boot',
     name: 'BOOT Button',
-    shortDesc: 'Firmware Download Mode',
+    shortDesc: 'Download / Flash Mode',
     details:
-      'Hold BOOT if your computer ever has trouble syncing with the ESP32 during upload. It puts the chip into flashing mode.',
+      'Used to put the ESP32 into firmware upload mode if automatic uploading ever stalls.',
+  },
+  wifi: {
+    id: 'wifi',
+    name: 'Wi-Fi Antenna',
+    shortDesc: 'Wireless Communication',
+    details:
+      'The gold zig-zag trace at the top lets your ESP32 connect to Wi-Fi networks and Bluetooth devices for IoT projects.',
+  },
+  pwr: {
+    id: 'pwr',
+    name: 'Power LED',
+    shortDesc: 'Board Power Indicator',
+    details:
+      'A small red LED that lights up as soon as the ESP32 receives power through USB or a battery.',
+  },
+  uart: {
+    id: 'uart',
+    name: 'USB-to-Serial Chip',
+    shortDesc: 'Computer Translator (CP2102)',
+    details:
+      'Translates USB signals from your computer into Serial data that the ESP32 microcontroller can understand.',
   },
   led: {
     id: 'led',
-    name: 'Onboard Built-in LED (GPIO 2)',
-    shortDesc: 'Programmable Blue Status LED',
+    name: 'Built-in LED (GPIO 2)',
+    shortDesc: 'Programmable Onboard LED',
     details:
-      'A tiny blue LED soldered right onto the ESP32 board and wired internally to GPIO 2 — perfect for your very first Blink program!',
+      'A tiny blue LED built right onto the board and connected to GPIO 2 — we will blink this in Level 3!',
   },
 };
 
@@ -140,14 +164,28 @@ export const ESP32BoardSVG: React.FC<ESP32BoardSVGProps> = ({
       ))}
 
       {/* Wi-Fi Antenna Area */}
-      <rect x="115" y="28" width="130" height="44" rx="4" fill="#132542" stroke="#243e66" />
-      <path
-        d="M130 62 V38 H144 V56 H158 V38 H172 V56 H186 V38 H200 V56 H214 V38 H230"
-        fill="none"
-        stroke="#d4a74a"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
+      <g
+        onClick={() => onSelectPart?.('wifi')}
+        style={{ cursor: clickable ? 'pointer' : 'default' }}
+      >
+        <rect
+          x="115"
+          y="28"
+          width="130"
+          height="44"
+          rx="4"
+          fill="#132542"
+          stroke={isSel('wifi') ? '#22d3ee' : isExp('wifi') ? '#10b981' : '#243e66'}
+          strokeWidth={isSel('wifi') ? 3 : 1.5}
+        />
+        <path
+          d="M130 62 V38 H144 V56 H158 V38 H172 V56 H186 V38 H200 V56 H214 V38 H230"
+          fill="none"
+          stroke="#d4a74a"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </g>
 
       {/* ESP32-WROOM Metal Shield (Microcontroller) */}
       <g
@@ -269,16 +307,45 @@ export const ESP32BoardSVG: React.FC<ESP32BoardSVGProps> = ({
       ))}
 
       {/* USB-to-Serial Chip */}
-      <rect x="160" y="255" width="40" height="40" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1.5" />
-      <text x="180" y="279" textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontWeight="700">
-        CP2102
-      </text>
+      <g
+        onClick={() => onSelectPart?.('uart')}
+        style={{ cursor: clickable ? 'pointer' : 'default' }}
+      >
+        <rect
+          x="156"
+          y="252"
+          width="48"
+          height="44"
+          rx="5"
+          fill="#1e293b"
+          stroke={isSel('uart') ? '#22d3ee' : isExp('uart') ? '#10b981' : '#475569'}
+          strokeWidth={isSel('uart') ? 3 : 1.5}
+        />
+        <text x="180" y="278" textAnchor="middle" fill="#cbd5e1" fontSize="9" fontWeight="700">
+          CP2102
+        </text>
+      </g>
 
       {/* Power Red LED */}
-      <rect x="130" y="330" width="12" height="7" rx="2" fill="#ef4444" opacity="0.85" />
-      <text x="136" y="348" textAnchor="middle" fill="#94a3b8" fontSize="8">
-        PWR
-      </text>
+      <g
+        onClick={() => onSelectPart?.('pwr')}
+        style={{ cursor: clickable ? 'pointer' : 'default' }}
+      >
+        <rect
+          x="124"
+          y="324"
+          width="24"
+          height="18"
+          rx="4"
+          fill="transparent"
+          stroke={isSel('pwr') ? '#22d3ee' : isExp('pwr') ? '#10b981' : 'transparent'}
+          strokeWidth="2"
+        />
+        <rect x="130" y="330" width="12" height="7" rx="2" fill="#ef4444" opacity="0.95" />
+        <text x="136" y="352" textAnchor="middle" fill="#cbd5e1" fontSize="8.5" fontWeight="700">
+          PWR
+        </text>
+      </g>
 
       {/* Onboard Blue Programmable LED (GPIO 2) */}
       <g

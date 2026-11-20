@@ -1,0 +1,99 @@
+{
+  "generatedAt": "2026-11-20T05:32:09.361Z",
+  "boardFqbn": "esp32:esp32:esp32",
+  "firmware": [
+    {
+      "id": "level-3-blink",
+      "level": 3,
+      "name": "Normal Blink (1s)",
+      "description": "Blinks the onboard ESP32 LED (GPIO 2) ON for 1 second and OFF for 1 second.",
+      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "version": "1.0.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "80m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-3/blink.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-3-blink-slow",
+      "level": 3,
+      "name": "Slow Blink (2s)",
+      "description": "Blinks the onboard ESP32 LED (GPIO 2) slowly: 2 seconds ON, 2 seconds OFF.",
+      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "version": "1.0.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "80m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-3/blink-slow.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-3-blink-fast",
+      "level": 3,
+      "name": "Fast Blink (250ms)",
+      "description": "Blinks the onboard ESP32 LED (GPIO 2) quickly: 250ms ON, 250ms OFF.",
+      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "version": "1.0.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "80m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-3/blink-fast.bin",
+          "address": "0x10000"
+        }
+      ]
+    }
+  ]
+}

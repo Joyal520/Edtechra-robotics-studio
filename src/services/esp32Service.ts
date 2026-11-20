@@ -26,6 +26,38 @@ export interface CompileResult {
   images?: { name: string; address: number; dataBase64: string }[];
 }
 
+export interface FirmwarePart {
+  path: string;
+  address: string;
+}
+
+export interface FirmwareEntry {
+  id: string;
+  level: number;
+  name: string;
+  description: string;
+  board: string;
+  version: string;
+  flashConfig: { flashSize: string; flashMode: string; flashFreq: string };
+  parts: FirmwarePart[];
+}
+
+export interface FirmwareManifest {
+  generatedAt: string;
+  boardFqbn: string;
+  firmware: FirmwareEntry[];
+}
+
+function arrayBufferToBinaryString(buf: ArrayBuffer): string {
+  const bytes = new Uint8Array(buf);
+  const chunks: string[] = [];
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    chunks.push(String.fromCharCode(...bytes.subarray(i, i + CHUNK)));
+  }
+  return chunks.join('');
+}
+
 function base64ToBinaryString(base64: string): string {
   const binary = atob(base64);
   return binary;
@@ -361,6 +393,47 @@ class ESP32HardwareService {
       address: img.address,
       data: base64ToBinaryString(img.dataBase64),
     }));
+
+    await this.flashImages(images, onStage, onProgress);
+  }
+
+  async fetchFirmwareManifest(): Promise<FirmwareManifest> {
+    const res = await fetch('./firmware/manifest.json', { cache: 'no-cache' });
+    if (!res.ok) {
+      throw new Error('Could not load firmware/manifest.json.');
+    }
+    return (await res.json()) as FirmwareManifest;
+  }
+
+  async flashPrecompiledFirmware(
+    entry: FirmwareEntry,
+    onStage: (stage: UploadStage, detail: string) => void,
+    onProgress: (pct: number) => void
+  ): Promise<void> {
+    if (!this.isConnected()) {
+      throw new Error('No ESP32 board is connected. Please connect your ESP32 via USB first.');
+    }
+
+    onStage('checking', 'Checking board connection...');
+    onProgress(5);
+
+    onStage('preparing', `Downloading precompiled firmware (${entry.name})...`);
+    const images: { address: number; data: string; name: string }[] = [];
+    for (let i = 0; i < entry.parts.length; i++) {
+      const part = entry.parts[i];
+      const url = `./${part.path.replace(/^\.?\//, '')}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Could not download firmware file: ${part.path} (HTTP ${res.status})`);
+      }
+      const buf = await res.arrayBuffer();
+      images.push({
+        name: part.path.split('/').pop() || part.path,
+        address: parseInt(part.address, 16),
+        data: arrayBufferToBinaryString(buf),
+      });
+      onProgress(8 + Math.round(((i + 1) / entry.parts.length) * 10));
+    }
 
     await this.flashImages(images, onStage, onProgress);
   }

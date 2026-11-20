@@ -1,11 +1,17 @@
 export type NavTab =
   | 'dashboard'
+  | 'journey'
+  | 'level'
+  | 'projects'
+  | 'achievements'
   | 'path'
   | 'session'
   | 'ide'
   | 'circuit'
   | 'code'
   | 'hardware'
+  | 'progress'
+  | 'settings'
   | 'teacher';
 
 export type BadgeId =
@@ -105,6 +111,9 @@ export interface StudentProgress {
   studentName: string;
   xp: number;
   completedSessions: number[];
+  completedLevels: number[];
+  quizScores: Record<number, number>;
+  beginnerBadges: string[];
   unlockedBadges: BadgeId[];
   hardwareConnectedOnce: boolean;
   uploadedOnce: boolean;
