@@ -51,20 +51,30 @@ class ESP32HardwareService {
     return this.deviceInfo;
   }
 
-  async checkCompilerHealth(): Promise<CompilerHealth> {
-    try {
-      const res = await fetch('/api/health');
-      if (!res.ok) return { online: false, installed: false, esp32Core: false, version: null };
-      const data = await res.json();
-      return {
-        online: true,
-        installed: Boolean(data.installed),
-        esp32Core: Boolean(data.esp32Core),
-        version: data.version || null,
-      };
-    } catch {
-      return { online: false, installed: false, esp32Core: false, version: null };
+  private getApiCandidates(): string[] {
+    if (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      return ['/api', 'http://localhost:3001/api'];
     }
+    return ['http://localhost:3001/api'];
+  }
+
+  async checkCompilerHealth(): Promise<CompilerHealth> {
+    for (const base of this.getApiCandidates()) {
+      try {
+        const res = await fetch(`${base}/health`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        return {
+          online: true,
+          installed: Boolean(data.installed),
+          esp32Core: Boolean(data.esp32Core),
+          version: data.version || null,
+        };
+      } catch {
+        // try next candidate
+      }
+    }
+    return { online: false, installed: false, esp32Core: false, version: null };
   }
 
   async connect(onLog?: (line: string) => void): Promise<HardwareDeviceInfo> {
@@ -233,12 +243,25 @@ class ESP32HardwareService {
   }
 
   async compileCode(code: string, fqbn = 'esp32:esp32:esp32'): Promise<CompileResult> {
-    const res = await fetch('/api/compile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, fqbn }),
-    });
-    return (await res.json()) as CompileResult;
+    for (const base of this.getApiCandidates()) {
+      try {
+        const res = await fetch(`${base}/compile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, fqbn }),
+        });
+        if (res.status === 404) continue;
+        return (await res.json()) as CompileResult;
+      } catch {
+        // try next candidate
+      }
+    }
+    return {
+      ok: false,
+      code: 'COMPILER_BRIDGE_OFFLINE',
+      error:
+        'Could not reach the local ESP32 Compiler Bridge (http://localhost:3001). GitHub Pages hosts the static web app only — run "npm run dev:server" on your PC for one-click C++ compilation, or use the "Flash .bin to ESP32" option directly over USB.',
+    };
   }
 
   async flashImages(
