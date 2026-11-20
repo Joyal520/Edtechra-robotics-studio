@@ -9,10 +9,11 @@ const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const CLI = path.join(ROOT, 'tools', 'arduino-cli', process.platform === 'win32' ? 'arduino-cli.exe' : 'arduino-cli');
-const FQBN = 'esp32:esp32:esp32';
+// Universal ESP32 flash settings (DIO @ 40MHz) so firmware boots on BOTH genuine Espressif modules AND all DevKit V1 clones
+const FQBN = 'esp32:esp32:esp32:FlashMode=dio,FlashFreq=40';
 const OUT_ROOT = path.join(ROOT, 'public', 'firmware');
 const COMMON_DIR = path.join(OUT_ROOT, 'common');
-const CACHE_DIR = path.join(os.tmpdir(), 'edtechra-esp32-build-cache');
+const CACHE_DIR = path.join(os.tmpdir(), 'edtechra-esp32-dio40-cache');
 
 const SKETCHES = [
   {
@@ -24,13 +25,17 @@ const SKETCHES = [
     description: 'Blinks the onboard ESP32 LED (GPIO 2) ON for 1 second and OFF for 1 second.',
     code: `// Level 3: Normal Blink (1000ms)
 void setup() {
+  Serial.begin(115200);
   pinMode(2, OUTPUT);
+  Serial.println("EdTechra Level 3: Normal Blink (1s) started!");
 }
 
 void loop() {
   digitalWrite(2, HIGH);
+  Serial.println("LED ON (HIGH)");
   delay(1000);
   digitalWrite(2, LOW);
+  Serial.println("LED OFF (LOW)");
   delay(1000);
 }
 `,
@@ -44,13 +49,17 @@ void loop() {
     description: 'Blinks the onboard ESP32 LED (GPIO 2) slowly: 2 seconds ON, 2 seconds OFF.',
     code: `// Level 3: Slow Blink (2000ms)
 void setup() {
+  Serial.begin(115200);
   pinMode(2, OUTPUT);
+  Serial.println("EdTechra Level 3: Slow Blink (2s) started!");
 }
 
 void loop() {
   digitalWrite(2, HIGH);
+  Serial.println("LED ON (HIGH) - 2s");
   delay(2000);
   digitalWrite(2, LOW);
+  Serial.println("LED OFF (LOW) - 2s");
   delay(2000);
 }
 `,
@@ -64,13 +73,17 @@ void loop() {
     description: 'Blinks the onboard ESP32 LED (GPIO 2) quickly: 250ms ON, 250ms OFF.',
     code: `// Level 3: Fast Blink (250ms)
 void setup() {
+  Serial.begin(115200);
   pinMode(2, OUTPUT);
+  Serial.println("EdTechra Level 3: Fast Blink (250ms) started!");
 }
 
 void loop() {
   digitalWrite(2, HIGH);
+  Serial.println("LED ON (HIGH) - 250ms");
   delay(250);
   digitalWrite(2, LOW);
+  Serial.println("LED OFF (LOW) - 250ms");
   delay(250);
 }
 `,
@@ -117,7 +130,7 @@ async function main() {
     await execFileAsync(
       CLI,
       ['compile', '--fqbn', FQBN, '--build-path', CACHE_DIR, '--output-dir', buildDir, sketchDir],
-      { timeout: 180000, maxBuffer: 10 * 1024 * 1024 }
+      { timeout: 600000, maxBuffer: 10 * 1024 * 1024 }
     );
 
     const files = await fs.readdir(buildDir);
@@ -157,8 +170,8 @@ async function main() {
       name: sk.name,
       description: sk.description,
       board: 'ESP32 DevKit V1 (esp32:esp32:esp32)',
-      version: '1.0.0',
-      flashConfig: { flashSize: '4MB', flashMode: 'dio', flashFreq: '80m' },
+      version: '1.1.0',
+      flashConfig: { flashSize: '4MB', flashMode: 'dio', flashFreq: '40m' },
       parts,
     });
 

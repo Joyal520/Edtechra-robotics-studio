@@ -69,7 +69,10 @@ async function checkArduinoCli() {
 
 async function handleCompile(body) {
   const code = typeof body?.code === 'string' ? body.code : '';
-  const fqbn = typeof body?.fqbn === 'string' && body.fqbn ? body.fqbn : 'esp32:esp32:esp32';
+  let fqbn = typeof body?.fqbn === 'string' && body.fqbn ? body.fqbn : 'esp32:esp32:esp32:FlashMode=dio,FlashFreq=40';
+  if (fqbn === 'esp32:esp32:esp32') {
+    fqbn = 'esp32:esp32:esp32:FlashMode=dio,FlashFreq=40';
+  }
 
   if (!code.trim()) {
     return { status: 400, data: { ok: false, error: 'No source code provided.' } };
