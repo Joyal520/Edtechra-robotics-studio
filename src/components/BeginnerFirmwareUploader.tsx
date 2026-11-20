@@ -196,7 +196,7 @@ export const BeginnerFirmwareUploader: React.FC<BeginnerFirmwareUploaderProps> =
 
       {/* Step 4: Upload Progress */}
       {stage !== 'idle' && (
-        <div className="card-sm" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="card-sm" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className="progress-track">
             <div
               className={`progress-fill ${stage === 'done' ? 'success' : ''}`}
@@ -207,6 +207,21 @@ export const BeginnerFirmwareUploader: React.FC<BeginnerFirmwareUploaderProps> =
             <span className="muted">{detail}</span>
             <strong>{progressPct}%</strong>
           </div>
+          {stage === 'checking' && (
+            <div
+              style={{
+                padding: '10px 12px',
+                borderRadius: 9,
+                background: 'var(--warning-bg)',
+                border: '1px solid var(--warning-border)',
+                color: '#92400E',
+                fontSize: 13,
+              }}
+            >
+              <strong>Hold BOOT button now if needed:</strong> Many ESP32 DevKit boards require pressing and holding the{' '}
+              <strong>BOOT</strong> button while syncing. Release BOOT as soon as <strong>Uploading…</strong> appears!
+            </div>
+          )}
         </div>
       )}
 

@@ -48,6 +48,10 @@ export interface FirmwareManifest {
   firmware: FirmwareEntry[];
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function arrayBufferToBinaryString(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
   const chunks: string[] = [];
@@ -59,8 +63,44 @@ function arrayBufferToBinaryString(buf: ArrayBuffer): string {
 }
 
 function base64ToBinaryString(base64: string): string {
-  const binary = atob(base64);
-  return binary;
+  return atob(base64);
+}
+
+/**
+ * Safely releases esptool-js Transport reader locks and closes the Web Serial port.
+ * Works around esptool-js Transport.disconnect() not always calling reader.releaseLock()
+ * after reader.cancel(), which can wedge Windows CP210x drivers on subsequent opens.
+ */
+async function safeReleasePort(transport: Transport | null, port: SerialPort | null): Promise<void> {
+  if (transport) {
+    const t = transport as unknown as { reader?: ReadableStreamDefaultReader<Uint8Array> };
+    if (t.reader) {
+      try {
+        await t.reader.cancel();
+      } catch {
+        // ignore cancel errors
+      }
+      try {
+        t.reader.releaseLock();
+      } catch {
+        // ignore releaseLock errors
+      }
+      t.reader = undefined;
+    }
+  }
+
+  if (port) {
+    try {
+      if (port.readable || port.writable) {
+        await port.close();
+      }
+    } catch {
+      // ignore close errors if already closed
+    }
+  }
+
+  // Give Windows CP210x / CH340 driver time to finalize CloseHandle before next open
+  await sleep(350);
 }
 
 class ESP32HardwareService {
@@ -118,9 +158,7 @@ class ESP32HardwareService {
 
     await this.disconnect();
 
-    const log = (msg: string) => {
-      if (onLog) onLog(msg);
-    };
+    const log = (msg: string) => onLog?.(msg);
 
     log('Requesting USB Serial device from browser...');
     let port: SerialPort;
@@ -130,78 +168,85 @@ class ESP32HardwareService {
       const e = err as Error;
       if (e.name === 'NotFoundError') {
         throw new Error(
-          'No port was selected. In the browser popup, click your board (e.g. "CP2102 USB to UART Bridge Controller (COM14)") so it is highlighted, then press Connect.'
+          'No port was selected. In the browser popup, click your board (e.g. "CP2102 USB to UART Bridge Controller") so it is highlighted, then press Connect.'
         );
       }
       throw err;
     }
-    const info = port.getInfo();
 
-    // STAGE 1 — Genuinely open the USB serial port. This proves a real device is attached.
-    log('Opening USB serial port at 115200 baud...');
+    // Genuinely open and close the USB serial port to prove real hardware is attached and free.
+    // We intentionally do NOT enter ROM bootloader mode here so boards requiring BOOT hold
+    // stay clean and ready for flashing when the student clicks Upload.
+    log('Verifying USB serial port at 115200 baud...');
     try {
+      if (port.readable || port.writable) {
+        await port.close();
+        await sleep(350);
+      }
       await port.open({ baudRate: 115200 });
+      await sleep(100);
       await port.close();
+      await sleep(350);
     } catch (err) {
+      await safeReleasePort(null, port);
       const e = err as Error;
       throw new Error(
         e.name === 'InvalidStateError'
-          ? 'The port is already open in another tab or program. Close Arduino IDE, PuTTY, other Serial Monitors, or other EdTechra tabs, then try again.'
+          ? 'The port is already open in another tab or program. Close Arduino IDE, other Serial Monitors, or other EdTechra tabs, then try again.'
           : e.name === 'NetworkError'
-          ? 'Windows could not open the COM port. It is probably in use by Arduino IDE or another Serial Monitor. Close it, unplug/replug the ESP32, and try again.'
+          ? 'Windows could not open the COM port. Make sure Arduino IDE or another Serial Monitor is closed, unplug and replug the ESP32 USB cable, and try again.'
           : `Could not open the serial port: ${e.message}`
       );
     }
-    log('USB serial port opened successfully.');
 
-    const vidHex = info.usbVendorId ? `0x${info.usbVendorId.toString(16).toUpperCase().padStart(4, '0')}` : '';
-    const pidHex = info.usbProductId ? `0x${info.usbProductId.toString(16).toUpperCase().padStart(4, '0')}` : '';
+    const info = port.getInfo();
+    const vidHex = info.usbVendorId
+      ? `0x${info.usbVendorId.toString(16).toUpperCase().padStart(4, '0')}`
+      : '';
+    const pidHex = info.usbProductId
+      ? `0x${info.usbProductId.toString(16).toUpperCase().padStart(4, '0')}`
+      : '';
     const bridge =
-      info.usbVendorId === 0x10c4 ? 'CP210x' : info.usbVendorId === 0x1a86 ? 'CH340' : info.usbVendorId === 0x0403 ? 'FTDI' : info.usbVendorId === 0x303a ? 'Native USB' : 'USB Serial';
+      info.usbVendorId === 0x10c4
+        ? 'CP210x'
+        : info.usbVendorId === 0x1a86
+        ? 'CH340'
+        : info.usbVendorId === 0x0403
+        ? 'FTDI'
+        : info.usbVendorId === 0x303a
+        ? 'ESP32 Native USB'
+        : 'USB Serial';
     const portLabel = vidHex ? `${bridge} (${vidHex}:${pidHex})` : 'USB Serial Port';
 
     this.port = port;
     this.deviceInfo = {
-      chip: 'ESP32 (USB serial detected)',
+      chip: 'ESP32',
       usbVendorId: info.usbVendorId,
       usbProductId: info.usbProductId,
       portLabel,
       connectedAt: new Date().toLocaleTimeString(),
     };
 
-    // STAGE 2 — Try to sync with the ESP32 ROM bootloader to read the chip type and MAC.
-    try {
-      const loader = await this.ensureLoader(log);
-      // Return the board to normal run mode so its current program keeps running.
-      try {
-        await loader.after('hard_reset');
-      } catch {
-        // ignore
-      }
-      await this.releaseLoader();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      log(`Bootloader sync not completed yet (${msg}).`);
-      log('Board is connected over USB. Chip details will be read again when you upload.');
-      log('Tip: if upload fails, hold the BOOT button on the ESP32 while the upload starts.');
-    }
-
+    log(`Connected to ${this.deviceInfo.chip} on ${portLabel}. Ready to upload!`);
     return this.deviceInfo;
   }
 
-  /** Sync with the ESP32 ROM bootloader (needed for flashing). Safe to call repeatedly. */
-  async ensureLoader(onLog?: (line: string) => void): Promise<ESPLoader> {
-    if (this.loader) return this.loader;
-    if (!this.port) throw new Error('No ESP32 board is connected. Connect your ESP32 first.');
+  /**
+   * Opens the serial port cleanly and syncs with the ESP32 ROM bootloader + stub flasher.
+   * Gives 12 connect attempts (~15 seconds) so students have plenty of time to hold BOOT
+   * on DevKit clones whose auto-reset capacitor does not trigger download mode automatically.
+   */
+  private async startBootloaderSession(onLog?: (line: string) => void): Promise<ESPLoader> {
+    if (!this.port) {
+      throw new Error('No ESP32 board is connected. Click Connect ESP32 first.');
+    }
     const log = (msg: string) => onLog?.(msg);
 
-    log('Syncing with ESP32 bootloader (auto-reset)...');
-    // Transport opens the port itself, so make sure it is closed first (e.g. after Serial Monitor).
-    try {
-      if (this.port.readable || this.port.writable) await this.port.close();
-    } catch {
-      // ignore
-    }
+    await this.stopSerialMonitor();
+    await safeReleasePort(this.transport, this.port);
+    this.transport = null;
+    this.loader = null;
+
     const transport = new Transport(this.port, false);
     const loader = new ESPLoader({
       transport,
@@ -217,57 +262,51 @@ class ESP32HardwareService {
     });
 
     try {
-      const chipName = await loader.main();
+      // 12 attempts (~12–15s) gives plenty of time for auto-reset OR holding BOOT button
+      await loader.connect('default_reset', 12, true);
+      const chipDesc = await loader.chip.getChipDescription(loader);
       let mac = '';
       try {
         mac = await loader.chip.readMac(loader);
       } catch {
         mac = '';
       }
+      if (typeof (loader.chip as unknown as { postConnect?: (l: ESPLoader) => Promise<void> }).postConnect === 'function') {
+        await (loader.chip as unknown as { postConnect: (l: ESPLoader) => Promise<void> }).postConnect(loader);
+      }
+      await loader.runStub();
+
       this.transport = transport;
       this.loader = loader;
       if (this.deviceInfo) {
         this.deviceInfo = {
           ...this.deviceInfo,
-          chip: String(chipName).split(' (')[0] || 'ESP32',
+          chip: String(chipDesc).split(' (')[0] || 'ESP32',
           mac: mac || undefined,
         };
       }
-      log(`Detected ${this.deviceInfo?.chip}${mac ? ` (MAC: ${mac})` : ''}`);
+      log(`Synced with ${this.deviceInfo?.chip}${mac ? ` (MAC: ${mac})` : ''}`);
       return loader;
     } catch (err) {
-      try {
-        await transport.disconnect();
-      } catch {
-        // ignore
+      await safeReleasePort(transport, this.port);
+      this.transport = null;
+      this.loader = null;
+
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/open/i.test(msg)) {
+        throw new Error(
+          'Windows could not open the COM port. Close any other program or tab using the ESP32, unplug and replug the USB cable, click Disconnect then Connect ESP32, and try again.'
+        );
       }
-      try {
-        if (this.port.readable || this.port.writable) await this.port.close();
-      } catch {
-        // ignore
-      }
-      throw err;
+      throw new Error(
+        `ESP32 did not enter download mode (${msg}). Hold down the BOOT button on your ESP32 board, click Upload, and release BOOT as soon as "Uploading..." starts.`
+      );
     }
   }
 
   async disconnect(): Promise<void> {
     await this.stopSerialMonitor();
-    if (this.transport) {
-      try {
-        await this.transport.disconnect();
-      } catch {
-        // ignore
-      }
-    }
-    if (this.port) {
-      try {
-        if (this.port.readable || this.port.writable) {
-          await this.port.close();
-        }
-      } catch {
-        // ignore
-      }
-    }
+    await safeReleasePort(this.transport, this.port);
     this.port = null;
     this.transport = null;
     this.loader = null;
@@ -292,7 +331,7 @@ class ESP32HardwareService {
       ok: false,
       code: 'COMPILER_BRIDGE_OFFLINE',
       error:
-        'Could not reach the local ESP32 Compiler Bridge (http://localhost:3001). GitHub Pages hosts the static web app only — run "npm run dev:server" on your PC for one-click C++ compilation, or use the "Flash .bin to ESP32" option directly over USB.',
+        'Could not reach the local ESP32 Compiler Bridge (http://localhost:3001). GitHub Pages hosts the static web app only — use Beginner Mode precompiled firmware, run "npm run dev:server" on your PC for C++ compilation, or flash a .bin file directly.',
     };
   }
 
@@ -305,63 +344,53 @@ class ESP32HardwareService {
       throw new Error('No ESP32 board is currently connected. Connect your ESP32 first.');
     }
 
-    await this.stopSerialMonitor();
+    onStage(
+      'checking',
+      'Syncing with ESP32 bootloader... (Hold the BOOT button on your ESP32 if this takes >2 seconds)'
+    );
+    onProgress(12);
 
-    onStage('checking', 'Checking board connection and syncing with ESP32 bootloader...');
-    onProgress(10);
-    let loader: ESPLoader;
+    const loader = await this.startBootloaderSession();
+
     try {
-      loader = await this.ensureLoader();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      throw new Error(
-        `Could not enter ESP32 upload mode (${msg}). Hold the BOOT button on the ESP32, click Upload again, and release BOOT once "Uploading..." appears.`
-      );
+      onStage('preparing', `Preparing ${images.length} firmware image(s)...`);
+      const fileArray = images.map((img) => ({
+        data: img.data,
+        address: img.address,
+      }));
+      onProgress(22);
+
+      onStage('uploading', 'Uploading firmware to ESP32 flash memory... (You can release BOOT now)');
+      await loader.writeFlash({
+        fileArray,
+        flashSize: 'keep',
+        flashMode: 'keep',
+        flashFreq: 'keep',
+        eraseAll: false,
+        compress: true,
+        reportProgress: (fileIndex: number, written: number, total: number) => {
+          const filePct = total > 0 ? written / total : 0;
+          const overall = 22 + Math.round(((fileIndex + filePct) / Math.max(1, fileArray.length)) * 70);
+          onProgress(Math.min(93, overall));
+        },
+      });
+
+      onStage('verifying', 'Resetting ESP32 and starting your program...');
+      onProgress(97);
+      try {
+        await loader.after('hard_reset');
+      } catch {
+        // some boards reset automatically on disconnect
+      }
+    } finally {
+      // ALWAYS release the reader lock and close the port cleanly so the next upload or Serial Monitor works!
+      await safeReleasePort(this.transport, this.port);
+      this.transport = null;
+      this.loader = null;
     }
-
-    onStage('preparing', `Preparing ${images.length} firmware image(s)...`);
-    const fileArray = images.map((img) => ({
-      data: img.data,
-      address: img.address,
-    }));
-    onProgress(20);
-
-    onStage('uploading', 'Uploading firmware to ESP32 flash memory...');
-    await loader.writeFlash({
-      fileArray,
-      flashSize: 'keep',
-      flashMode: 'keep',
-      flashFreq: 'keep',
-      eraseAll: false,
-      compress: true,
-      reportProgress: (fileIndex: number, written: number, total: number) => {
-        const filePct = total > 0 ? written / total : 0;
-        const overall = 20 + Math.round(((fileIndex + filePct) / Math.max(1, fileArray.length)) * 70);
-        onProgress(Math.min(92, overall));
-      },
-    });
-
-    onStage('verifying', 'Verifying flash and resetting ESP32...');
-    onProgress(96);
-    await loader.after('hard_reset');
-    // Release the bootloader session so the new program runs and the port is free
-    // for the Serial Monitor. The next upload re-syncs automatically.
-    await this.releaseLoader();
 
     onProgress(100);
     onStage('done', 'Program uploaded and running on ESP32!');
-  }
-
-  private async releaseLoader(): Promise<void> {
-    if (this.transport) {
-      try {
-        await this.transport.disconnect();
-      } catch {
-        // ignore
-      }
-    }
-    this.transport = null;
-    this.loader = null;
   }
 
   async compileAndUpload(
@@ -378,7 +407,7 @@ class ESP32HardwareService {
     onProgress(5);
 
     onStage('compiling', 'Compiling Arduino C++ code for ESP32...');
-    onProgress(12);
+    onProgress(10);
 
     const compiled = await this.compileCode(code, fqbn);
     if (!compiled.ok || !compiled.images || compiled.images.length === 0) {
@@ -414,10 +443,9 @@ class ESP32HardwareService {
       throw new Error('No ESP32 board is connected. Please connect your ESP32 via USB first.');
     }
 
-    onStage('checking', 'Checking board connection...');
+    onStage('preparing', `Downloading precompiled firmware (${entry.name})...`);
     onProgress(5);
 
-    onStage('preparing', `Downloading precompiled firmware (${entry.name})...`);
     const images: { address: number; data: string; name: string }[] = [];
     for (let i = 0; i < entry.parts.length; i++) {
       const part = entry.parts[i];
@@ -432,7 +460,7 @@ class ESP32HardwareService {
         address: parseInt(part.address, 16),
         data: arrayBufferToBinaryString(buf),
       });
-      onProgress(8 + Math.round(((i + 1) / entry.parts.length) * 10));
+      onProgress(5 + Math.round(((i + 1) / entry.parts.length) * 5));
     }
 
     await this.flashImages(images, onStage, onProgress);
@@ -459,20 +487,11 @@ class ESP32HardwareService {
       throw new Error('Connect an ESP32 board before starting the Serial Monitor.');
     }
     await this.stopSerialMonitor();
-    // Bootloader session holds the port; release it and reset the board into run mode.
-    if (this.loader) {
-      try {
-        await this.loader.after('hard_reset');
-      } catch {
-        // ignore
-      }
-      await this.releaseLoader();
-    }
+    await safeReleasePort(this.transport, this.port);
+    this.transport = null;
+    this.loader = null;
 
-    // Ensure port is open at 115200
-    if (!this.port.readable) {
-      await this.port.open({ baudRate: 115200 });
-    }
+    await this.port.open({ baudRate: 115200 });
     if (!this.port.readable) {
       throw new Error('Serial port is not readable.');
     }
@@ -513,7 +532,20 @@ class ESP32HardwareService {
       } catch {
         // ignore
       }
+      try {
+        this.monitorReader.releaseLock();
+      } catch {
+        // ignore
+      }
       this.monitorReader = null;
+    }
+    if (this.port && (this.port.readable || this.port.writable)) {
+      try {
+        await this.port.close();
+      } catch {
+        // ignore
+      }
+      await sleep(300);
     }
   }
 }
