@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-11-20T07:02:00.246Z",
+  "generatedAt": "2026-11-20T09:59:24.805Z",
   "boardFqbn": "esp32:esp32:esp32:FlashMode=dio,FlashFreq=40",
   "firmware": [
     {
       "id": "level-3-blink",
       "level": 3,
       "name": "Normal Blink (1s)",
-      "description": "Blinks the onboard ESP32 LED (GPIO 2) ON for 1 second and OFF for 1 second.",
-      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "description": "Blinks built-in LED (GPIO 2) every 1 second.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
       "version": "1.1.0",
       "flashConfig": {
         "flashSize": "4MB",
@@ -37,8 +37,8 @@
       "id": "level-3-blink-slow",
       "level": 3,
       "name": "Slow Blink (2s)",
-      "description": "Blinks the onboard ESP32 LED (GPIO 2) slowly: 2 seconds ON, 2 seconds OFF.",
-      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "description": "Blinks built-in LED (GPIO 2) slowly every 2 seconds.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
       "version": "1.1.0",
       "flashConfig": {
         "flashSize": "4MB",
@@ -68,8 +68,8 @@
       "id": "level-3-blink-fast",
       "level": 3,
       "name": "Fast Blink (250ms)",
-      "description": "Blinks the onboard ESP32 LED (GPIO 2) quickly: 250ms ON, 250ms OFF.",
-      "board": "ESP32 DevKit V1 (esp32:esp32:esp32)",
+      "description": "Flashes built-in LED (GPIO 2) quickly every 250ms.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
       "version": "1.1.0",
       "flashConfig": {
         "flashSize": "4MB",
@@ -91,6 +91,564 @@
         },
         {
           "path": "firmware/level-3/blink-fast.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-4-slow",
+      "level": 4,
+      "name": "External LED — Slow",
+      "description": "Blinks external LED on GPIO 23 every 1.5 seconds.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-4/external-led-slow.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-4-medium",
+      "level": 4,
+      "name": "External LED — Medium",
+      "description": "Blinks external LED on GPIO 23 every 600ms.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-4/external-led.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-4-fast",
+      "level": 4,
+      "name": "External LED — Fast",
+      "description": "Flashes external LED on GPIO 23 rapidly every 200ms.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-4/external-led-fast.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-5-sos",
+      "level": 5,
+      "name": "Standard SOS Signal",
+      "description": "3 short, 3 long, 3 short Morse flashes on GPIO 23 & built-in LED.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-5/sos.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-5-sos-fast",
+      "level": 5,
+      "name": "Fast Emergency SOS",
+      "description": "Faster emergency S-O-S beacon on GPIO 23 & built-in LED.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-5/sos-fast.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-6-traffic",
+      "level": 6,
+      "name": "Traffic Light (Standard)",
+      "description": "Red (23) → Green (21) → Yellow (22) → Repeat.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-6/traffic-lights.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-6-pedestrian",
+      "level": 6,
+      "name": "Pedestrian Crossing Mode",
+      "description": "Flashes Green before turning Yellow and Red for safe crossing.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-6/traffic-pedestrian.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-7-momentary",
+      "level": 7,
+      "name": "Press & Hold Button LED",
+      "description": "Press button (GPIO 18) = LED ON, Release = LED OFF.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-7/button-led.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-7-toggle",
+      "level": 7,
+      "name": "Toggle Switch Button LED",
+      "description": "Press once = LED ON, Press again = LED OFF.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-7/button-toggle.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-8-reaction",
+      "level": 8,
+      "name": "Reaction Speed Game",
+      "description": "Waits randomly, lights LED (23), measures button (18) reflex time in ms.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-8/reaction-game.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-9-alarm",
+      "level": 9,
+      "name": "Buzzer Alarm Siren",
+      "description": "Alternating high-low alarm siren on GPIO 25.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-9/buzzer.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-9-doorbell",
+      "level": 9,
+      "name": "Ding-Dong Doorbell",
+      "description": "Classic two-tone Ding-Dong chime on GPIO 25.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-9/buzzer-doorbell.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-10-melody",
+      "level": 10,
+      "name": "Electronic Melody",
+      "description": "Plays a cheerful musical scale & melody on GPIO 25.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-10/music.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-10-game",
+      "level": 10,
+      "name": "Game & Celebration Sounds",
+      "description": "Arcade coin, power-up, and victory fanfare on GPIO 25.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-10/music-game.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-11-knight",
+      "level": 11,
+      "name": "Knight Rider Sweep",
+      "description": "Back-and-forth running light across GPIOs 23, 22, 21, 19.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-11/led-patterns.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-11-police",
+      "level": 11,
+      "name": "Police Strobe Lights",
+      "description": "Alternating double-flash strobe on GPIOs 23/22 and 21/19.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-11/led-police.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-12-dj",
+      "level": 12,
+      "name": "DJ Light — Party Mix (All 5 Modes)",
+      "description": "Auto-cycles Disco, Chase, Alternating, Police, and Party strobe!",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-12/dj-light.bin",
+          "address": "0x10000"
+        }
+      ]
+    },
+    {
+      "id": "level-12-disco",
+      "level": 12,
+      "name": "DJ Light — Disco Beat",
+      "description": "Fast energetic disco sparkle across 4 LEDs.",
+      "board": "ESP32 DevKit V1 (DIO 40MHz)",
+      "version": "1.1.0",
+      "flashConfig": {
+        "flashSize": "4MB",
+        "flashMode": "dio",
+        "flashFreq": "40m"
+      },
+      "parts": [
+        {
+          "path": "firmware/common/bootloader.bin",
+          "address": "0x1000"
+        },
+        {
+          "path": "firmware/common/partitions.bin",
+          "address": "0x8000"
+        },
+        {
+          "path": "firmware/common/boot_app0.bin",
+          "address": "0xe000"
+        },
+        {
+          "path": "firmware/level-12/dj-disco.bin",
           "address": "0x10000"
         }
       ]

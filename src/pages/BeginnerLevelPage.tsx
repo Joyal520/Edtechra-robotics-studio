@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { BeginnerFirmwareUploader } from '../components/BeginnerFirmwareUploader';
 import { ESP32BoardSVG, ESP32_PARTS, type BoardPartId } from '../components/ESP32BoardSVG';
+import { Levels4To12 } from '../components/Levels4To12';
 import { QuizEngine } from '../components/QuizEngine';
 import { useStudio } from '../context/StudioContext';
 import { BEGINNER_LEVELS, XP_RULES } from '../data/beginnerJourney';
@@ -150,36 +151,30 @@ export const BeginnerLevelPage: React.FC = () => {
 
   const allMatched = MATCH_TARGETS.every((t) => matchedParts[t.id] === t.id);
 
-  // If Level 4–12 (upcoming stages)
-  if (levelDef.stageStatus === 'coming-next') {
+  // Levels 4–12 interactive workbench + precompiled firmware + 5-question quizzes
+  if (levelDef.level >= 4) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <button className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => setTab('journey')}>
-          <ArrowLeft size={15} /> Back to Learning Journey
-        </button>
-        <div className="card" style={{ padding: 28 }}>
-          <span className="tag tag-warn" style={{ marginBottom: 10 }}>
-            LEVEL {levelDef.level} • NEXT STAGE BUILD
-          </span>
-          <h1>
-            {levelDef.icon} Level {levelDef.level}: {levelDef.title}
-          </h1>
-          <p className="muted" style={{ fontSize: 16 }}>{levelDef.description}</p>
-          <div className="card-sm" style={{ marginTop: 16 }}>
-            <h3>What You Will Learn in Level {levelDef.level}</h3>
-            <ul className="checklist">
-              {levelDef.objectives.map((obj) => (
-                <li key={obj} className="check-item">
-                  <CheckCircle2 size={16} color="#2563EB" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span>{obj}</span>
-                </li>
-              ))}
-            </ul>
+        <div className="page-header" style={{ marginBottom: 0 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => setTab('journey')}>
+                <ArrowLeft size={14} /> Learning Journey
+              </button>
+              <span className="tag">LEVEL {levelDef.level} OF 12</span>
+              {levelCompleted && (
+                <span className="tag tag-ok">
+                  <CheckCircle2 size={13} /> {levelDef.badge.icon} {levelDef.badge.name}
+                </span>
+              )}
+            </div>
+            <h1>
+              {levelDef.icon} Level {levelDef.level} — {levelDef.title}
+            </h1>
+            <p className="muted" style={{ margin: 0 }}>{levelDef.description}</p>
           </div>
-          <p className="muted" style={{ marginTop: 16, fontSize: 13.5 }}>
-            Levels 1–3 are fully active right now (Stages 1–3). Levels 4–12 with precompiled firmware and breadboard diagrams are scheduled in Stages 4–6.
-          </p>
         </div>
+        <Levels4To12 levelDef={levelDef} />
       </div>
     );
   }
