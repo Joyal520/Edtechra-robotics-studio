@@ -481,7 +481,7 @@ export const BeginnerLevelPage: React.FC = () => {
             {[
               { id: 'lesson' as const, label: '1. USB & Serial Lesson' },
               { id: 'connect' as const, label: '2. Connect Real ESP32' },
-              { id: 'quiz' as const, label: '3. 10-Question Quiz' },
+              { id: 'quiz' as const, label: '3. 5-Question Quiz' },
               { id: 'done' as const, label: '4. Badge & Complete' },
             ].map((s) => (
               <button
@@ -640,7 +640,7 @@ export const BeginnerLevelPage: React.FC = () => {
               { id: 'lesson' as const, label: '1. Programming & LED' },
               { id: 'code' as const, label: '2. Interactive Code' },
               { id: 'upload' as const, label: '3. Upload Blink Firmware' },
-              { id: 'quiz' as const, label: '4. 10-Question Quiz' },
+              { id: 'quiz' as const, label: '4. 5-Question Quiz' },
               { id: 'done' as const, label: '5. Badge & Complete' },
             ].map((s) => (
               <button

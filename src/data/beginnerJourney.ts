@@ -198,10 +198,10 @@ export const BEGINNER_LEVELS: BeginnerLevelDef[] = [
     description:
       'Learn how USB data cables and serial communication work, then physically connect your real ESP32 to your computer.',
     objectives: [
-      'Understand USB ports, data cables, and serial communication',
+      'Understand USB ports and data cables',
       'Physically connect your ESP32 board to your computer',
-      'Verify a real Web Serial connection in the browser',
-      'Pass the 10-question Level 2 Quiz (80% or higher)',
+      'Verify a real USB connection in the browser',
+      'Pass the 5-question Level 2 Quiz (80% or higher)',
     ],
     badge: {
       id: 'hardware-connector',
@@ -214,133 +214,63 @@ export const BEGINNER_LEVELS: BeginnerLevelDef[] = [
     quiz: [
       {
         id: 'l2q1',
-        question: 'How does your computer send programming instructions to the ESP32?',
+        question: 'How does your computer send programs to the ESP32?',
         options: [
-          'Through the USB data cable using serial communication',
-          'By placing the ESP32 near the screen',
-          'By pressing the spacebar loudly',
+          'Through the USB data cable',
+          'By holding the board near the screen',
           'Through the headphone jack',
+          'By pressing the spacebar',
         ],
         correctIndex: 0,
-        explanation:
-          'Your computer sends instructions over the USB data cable via a serial port connection.',
+        explanation: 'Your computer sends programs to the ESP32 through a USB data cable.',
       },
       {
         id: 'l2q2',
-        question: 'Why do some phone USB cables fail to connect an ESP32 to a computer?',
+        question: 'Why do some phone USB cables not work with the ESP32?',
         options: [
+          'They only carry power and have no data wires',
           'They are the wrong color',
-          'Some phone cables are charge-only and do not have data wires inside',
-          'They are too short',
-          'USB cables only work with keyboards',
+          'They are too long',
+          'They only work on TVs',
         ],
-        correctIndex: 1,
-        explanation:
-          'Charge-only cables carry power but lack the internal data wires required for USB serial communication.',
+        correctIndex: 0,
+        explanation: 'Charge-only cables power the board, but cannot transfer data or programs.',
       },
       {
         id: 'l2q3',
-        question: 'What is "serial communication"?',
+        question: 'Which browsers work best for connecting your ESP32 over USB?',
         options: [
-          'Sending data one bit after another between your computer and the ESP32',
-          'Plugging two batteries together',
-          'Turning a monitor upside down',
-          'Printing a worksheet on paper',
+          'Google Chrome or Microsoft Edge on a computer',
+          'A calculator app',
+          'A music player',
+          'A PDF viewer',
         ],
         correctIndex: 0,
-        explanation:
-          'Serial communication sends binary data sequentially over a communication channel like USB-to-UART.',
+        explanation: 'Chrome and Edge on a computer support connecting directly to USB boards.',
       },
       {
         id: 'l2q4',
-        question: 'Which chip on the ESP32 board translates USB signals into Serial data?',
+        question: 'What lights up on the ESP32 when it receives power from USB?',
         options: [
+          'The small red Power (PWR) LED',
           'The Wi-Fi antenna',
-          'The USB-to-Serial chip (such as CP2102 or CH340)',
-          'The EN button',
-          'The 3.3V pin',
+          'The plastic pins',
+          'The computer keyboard',
         ],
-        correctIndex: 1,
-        explanation:
-          'The CP2102 or CH340 chip converts USB signals from your PC into serial UART signals for the ESP32.',
+        correctIndex: 0,
+        explanation: 'The small red PWR LED turns on as soon as your ESP32 has power.',
       },
       {
         id: 'l2q5',
-        question: 'Which web browsers support connecting directly to an ESP32 over Web Serial?',
+        question: 'What should you do when the browser popup asks you to pick a port?',
         options: [
-          'Google Chrome and Microsoft Edge on a desktop/laptop computer',
-          'Only a calculator app',
-          'Any TV remote',
-          'Only a PDF reader',
+          'Click your ESP32 port and then click Connect',
+          'Unplug the USB cable right away',
+          'Close the browser',
+          'Press Cancel',
         ],
         correctIndex: 0,
-        explanation:
-          'Chrome and Edge on desktop/laptop computers provide the Web Serial API used to talk to USB microcontrollers.',
-      },
-      {
-        id: 'l2q6',
-        question: 'When the browser device popup appears, what must you do before clicking Connect?',
-        options: [
-          'Unplug the ESP32 immediately',
-          'Click your ESP32 serial port (e.g. CP2102 / COM port) so it is selected',
-          'Close the browser window',
-          'Press Escape',
-        ],
-        correctIndex: 1,
-        explanation:
-          'You must select the ESP32 COM/USB port in the popup list so the Connect button becomes active.',
-      },
-      {
-        id: 'l2q7',
-        question: 'What should you close if Windows says the COM port is already in use?',
-        options: [
-          'Your calculator',
-          'Arduino IDE or any other Serial Monitor currently using that COM port',
-          'Your mouse',
-          'Your wallpaper',
-        ],
-        correctIndex: 1,
-        explanation:
-          'Only one program can hold a serial COM port open at a time, so close Arduino IDE or other serial monitors first.',
-      },
-      {
-        id: 'l2q8',
-        question: 'What indicates that your ESP32 is receiving power after plugging in the USB cable?',
-        options: [
-          'The board gets freezing cold',
-          'The small red Power (PWR) LED on the board lights up',
-          'The computer shuts down',
-          'The Wi-Fi antenna spins',
-        ],
-        correctIndex: 1,
-        explanation:
-          'The red PWR LED turns on immediately when the ESP32 receives power through USB.',
-      },
-      {
-        id: 'l2q9',
-        question: 'Which is a good safety habit when handling and connecting your ESP32?',
-        options: [
-          'Place it on a wet metal surface',
-          'Hold it by the edges on a clean, dry, non-conductive desk',
-          'Bend the metal pins with scissors',
-          'Yank the cable sideways out of the USB port',
-        ],
-        correctIndex: 1,
-        explanation:
-          'Always keep electronics on a dry, non-metallic surface and plug/unplug USB cables straight and gently.',
-      },
-      {
-        id: 'l2q10',
-        question: 'When the status banner turns GREEN and says "ESP32 CONNECTED SUCCESSFULLY", what does it mean?',
-        options: [
-          'The browser has established a real USB serial connection with your ESP32',
-          'You need to buy a new computer',
-          'The USB cable is broken',
-          'The board has no power',
-        ],
-        correctIndex: 0,
-        explanation:
-          'A green Connected status confirms the browser opened the real USB serial link to your ESP32 board.',
+        explanation: 'Select the ESP32 port in the list so the Connect button turns active.',
       },
     ],
   },
@@ -350,13 +280,12 @@ export const BEGINNER_LEVELS: BeginnerLevelDef[] = [
     theme: 'My First Program',
     icon: '💡',
     description:
-      'Learn how programs control the built-in LED, click each line of Blink code, and upload precompiled firmware directly over USB!',
+      'Learn how programs control the built-in LED, explore the Blink code, and upload it to your ESP32!',
     objectives: [
-      'Understand programs, instructions, LEDs, HIGH/LOW, delay(), and loop()',
-      'Explore every line of the Blink program interactively',
-      'Upload precompiled Blink firmware directly to your ESP32 (works on GitHub Pages!)',
-      'Experiment with Slow, Normal, and Fast Blink firmware variants',
-      'Pass the 10-question Level 3 Quiz (80% or higher)',
+      'Understand programs, LEDs, ON/OFF, and delays',
+      'Explore each line of the Blink program',
+      'Upload Slow, Normal, and Fast Blink to your ESP32',
+      'Pass the 5-question Level 3 Quiz (80% or higher)',
     ],
     badge: {
       id: 'first-programmer',
@@ -370,118 +299,63 @@ export const BEGINNER_LEVELS: BeginnerLevelDef[] = [
     quiz: [
       {
         id: 'l3q1',
-        question: 'What is a computer program?',
+        question: 'What is a program?',
         options: [
-          'A set of step-by-step instructions that tells a computer or microcontroller what to do',
-          'A metal screw inside a robot',
+          'A list of step-by-step instructions for the ESP32',
           'A type of USB cable',
+          'A plastic breadboard',
           'A battery charger',
         ],
         correctIndex: 0,
-        explanation:
-          'A program is an ordered list of instructions that the ESP32 executes to perform tasks.',
+        explanation: 'A program tells the ESP32 what to do, step by step.',
       },
       {
         id: 'l3q2',
-        question: 'What does LED stand for?',
+        question: 'What does HIGH mean when controlling an LED?',
         options: [
-          'Large Electric Disk',
-          'Light-Emitting Diode',
-          'Low Energy Driver',
-          'Linear Engine Device',
+          'Turn the LED ON',
+          'Turn the LED OFF',
+          'Unplug the board',
+          'Restart the computer',
         ],
-        correctIndex: 1,
-        explanation:
-          'LED stands for Light-Emitting Diode — an electronic component that emits light when electricity flows through it.',
+        correctIndex: 0,
+        explanation: 'Sending HIGH turns the LED ON, and sending LOW turns it OFF.',
       },
       {
         id: 'l3q3',
-        question: 'Which GPIO pin controls the built-in blue LED on most ESP32 DevKit V1 boards?',
-        options: ['GPIO 2', 'GPIO 99', 'GPIO 0V', 'GPIO 500'],
+        question: 'What does LOW mean when controlling an LED?',
+        options: [
+          'Turn the LED OFF',
+          'Make the LED brighter',
+          'Change the LED color',
+          'Turn on Wi-Fi',
+        ],
         correctIndex: 0,
-        explanation:
-          'The onboard programmable blue LED on standard ESP32 DevKit boards is wired internally to GPIO 2.',
+        explanation: 'LOW turns the LED OFF.',
       },
       {
         id: 'l3q4',
-        question: 'When does the void setup() function run?',
+        question: 'What does delay(1000); make the ESP32 do?',
         options: [
-          'Every millisecond forever',
-          'Only once when the ESP32 powers on or resets',
-          'Only when you unplug the board',
-          'Never',
+          'Wait for 1 second',
+          'Wait for 1 hour',
+          'Turn off the USB port',
+          'Delete the program',
         ],
-        correctIndex: 1,
-        explanation:
-          'setup() runs once at startup to configure pins like pinMode(2, OUTPUT);.',
+        correctIndex: 0,
+        explanation: '1,000 milliseconds equals 1 second, so delay(1000) pauses for 1 second.',
       },
       {
         id: 'l3q5',
-        question: 'What does pinMode(2, OUTPUT); tell the ESP32?',
+        question: 'Why does the LED keep blinking again and again?',
         options: [
-          'To turn off the USB port',
-          'That GPIO pin 2 will send electrical signals OUT to control a component like an LED',
-          'To wait 2 seconds',
-          'To read a button on pin 2',
-        ],
-        correctIndex: 1,
-        explanation:
-          'OUTPUT mode configures a GPIO pin to send voltage signals out to LEDs, buzzers, or relays.',
-      },
-      {
-        id: 'l3q6',
-        question: 'What does digitalWrite(2, HIGH); do to the built-in LED?',
-        options: [
-          'Turns the LED ON by sending a HIGH (3.3V) signal',
-          'Turns the LED OFF',
-          'Restarts the computer',
-          'Deletes the program',
-        ],
-        correctIndex: 0,
-        explanation:
-          'Sending HIGH outputs 3.3V on pin 2, lighting up the built-in LED.',
-      },
-      {
-        id: 'l3q7',
-        question: 'What does digitalWrite(2, LOW); do to the built-in LED?',
-        options: [
-          'Makes the LED brighter',
-          'Turns the LED OFF by setting the pin to 0V (LOW)',
-          'Changes the LED color to green',
-          'Connects Wi-Fi',
-        ],
-        correctIndex: 1,
-        explanation:
-          'Sending LOW drops pin 2 to 0V, turning the LED off.',
-      },
-      {
-        id: 'l3q8',
-        question: 'How long does delay(1000); pause the ESP32?',
-        options: ['1,000 seconds', '1 second (1,000 milliseconds)', '10 seconds', '1 minute'],
-        correctIndex: 1,
-        explanation:
-          'delay() uses milliseconds — there are 1,000 milliseconds in 1 second.',
-      },
-      {
-        id: 'l3q9',
-        question: 'Why does the LED keep blinking again and again without stopping?',
-        options: [
-          'Because the instructions are inside void loop(), which repeats forever',
+          'Because the code is inside loop(), which repeats forever',
           'Because you keep clicking the mouse',
-          'Because delay() turns the board off',
-          'Because the USB cable is shaking',
+          'Because the USB cable is loose',
+          'Because the computer screen is on',
         ],
         correctIndex: 0,
-        explanation:
-          'Everything inside void loop() runs in sequence from top to bottom and then repeats continuously.',
-      },
-      {
-        id: 'l3q10',
-        question: 'Which delay value makes the LED blink FASTER than delay(1000);?',
-        options: ['delay(250);', 'delay(2000);', 'delay(5000);', 'delay(10000);'],
-        correctIndex: 0,
-        explanation:
-          '250 milliseconds (0.25 seconds) is shorter than 1,000 ms, so the LED switches ON and OFF four times faster!',
+        explanation: 'Everything inside loop() repeats over and over automatically!',
       },
     ],
   },

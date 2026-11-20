@@ -638,6 +638,7 @@ h3 {
 .quiz-opt:hover:not(:disabled) {
   border-color: var(--primary);
   background: var(--primary-light);
+  transform: translateY(-1px);
 }
 
 .quiz-opt.selected {
@@ -650,12 +651,41 @@ h3 {
   border-color: var(--success);
   background: var(--success-bg);
   color: #15803D;
+  animation: quizPop 0.28s ease-out;
 }
 
 .quiz-opt.wrong {
   border-color: var(--danger);
   background: var(--danger-bg);
   color: var(--danger);
+  animation: quizShake 0.3s ease-out;
+}
+
+.quiz-slide {
+  animation: quizSlideIn 0.25s ease-out;
+}
+
+@keyframes quizSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes quizPop {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+
+@keyframes quizShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
 /* LED & Traffic Light Visuals */
