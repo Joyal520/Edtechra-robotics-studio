@@ -281,16 +281,22 @@ h3 {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  box-shadow: var(--shadow);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card-interactive:hover {
+  border-color: var(--primary-border);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
 }
 
 .card-sm {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
+  border-radius: 12px;
+  padding: 14px 16px;
 }
 
 .grid-2 {

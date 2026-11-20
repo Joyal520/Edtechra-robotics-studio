@@ -78,29 +78,20 @@ export const BeginnerFirmwareUploader: React.FC<BeginnerFirmwareUploaderProps> =
   return (
     <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-        <div>
-          <span className="tag" style={{ marginBottom: 6 }}>
-            GITHUB PAGES READY • NO COMPILER SERVER NEEDED
-          </span>
-          <h3 style={{ margin: 0, fontSize: 17 }}>{title}</h3>
-        </div>
-        {selectedEntry && (
-          <span className="tag tag-neutral">
-            <Cpu size={13} /> {selectedEntry.board}
-          </span>
-        )}
+        <h3 style={{ margin: 0, fontSize: 18 }}>{title}</h3>
+        <span className="tag tag-neutral">
+          <Cpu size={13} /> ESP32 USB Upload
+        </span>
       </div>
 
-      {/* Step 1 & 2: Connection Status Banner */}
+      {/* Step 1: Connection Status Banner */}
       <div className={`status-banner ${device ? 'connected' : 'disconnected'}`}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {device ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
           <div>
-            <div>{device ? 'ESP32 CONNECTED SUCCESSFULLY' : 'ESP32 NOT CONNECTED'}</div>
-            <div style={{ fontSize: 12.5, fontWeight: 500, opacity: 0.9 }}>
-              {device
-                ? `${device.chip} • ${device.portLabel}`
-                : 'Plug your ESP32 into USB and click Connect ESP32.'}
+            <div>{device ? 'ESP32 Connected' : 'ESP32 Not Connected'}</div>
+            <div style={{ fontSize: 12.5, fontWeight: 500 }}>
+              {device ? device.portLabel : 'Plug in USB and click Connect ESP32'}
             </div>
           </div>
         </div>
