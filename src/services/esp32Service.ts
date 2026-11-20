@@ -378,9 +378,17 @@ class ESP32HardwareService {
       onStage('verifying', 'Resetting ESP32 and starting your program...');
       onProgress(97);
       try {
-        await loader.after('hard_reset');
+        // Explicit RTS pulse so ESP32 exits ROM bootloader download mode and boots the new firmware.
+        // (esptool-js HardReset only sets RTS=false without pulsing RTS=true first.)
+        if (this.transport) {
+          await this.transport.setDTR(false);
+          await this.transport.setRTS(true);
+          await sleep(120);
+          await this.transport.setRTS(false);
+          await sleep(100);
+        }
       } catch {
-        // some boards reset automatically on disconnect
+        // fallback if board resets automatically on port close
       }
     } finally {
       // ALWAYS release the reader lock and close the port cleanly so the next upload or Serial Monitor works!

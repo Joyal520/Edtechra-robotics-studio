@@ -230,7 +230,8 @@ export const BeginnerFirmwareUploader: React.FC<BeginnerFirmwareUploaderProps> =
         <div className="check-item ok">
           <CheckCircle2 size={19} color="#16A34A" style={{ flexShrink: 0, marginTop: 2 }} />
           <div>
-            <strong>Firmware Uploaded Successfully!</strong> Look at your real ESP32 board — your program is now running!
+            <strong>Firmware Uploaded Successfully!</strong> Look at your real ESP32 board — your program should be running now.{' '}
+            <span className="muted">(If the LED hasn&apos;t started yet, press the <strong>EN</strong> reset button once on the board.)</span>
           </div>
         </div>
       )}
